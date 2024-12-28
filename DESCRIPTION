@@ -1,0 +1,18 @@
+Package: ctepi
+Title: Cumulative Treatment Effect (CTE) with partial identification (PI)
+Version: 0.1.0
+Authors@R: 
+    person("Mauricio", "Toro", , "torocea@uc.cl", role = c("aut", "cre"))
+Description: Partial identification bounds for the Average Treatment Effect (ATE) using
+   the Cumulative Treatment Effect (CTE) estimator. Empirical cumulative distribution
+   function (ECDF) with partial identification bounds under different assumptions.
+   Bounds of Williamson and Downs (1990) for the distribution of the difference between
+   two random variables.
+License: `use_gpl3_license()`
+Encoding: UTF-8
+Imports:
+    Rcpp (>= 1.0.12)
+LinkingTo:
+    Rcpp
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

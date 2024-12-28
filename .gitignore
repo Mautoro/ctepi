@@ -1,0 +1,9 @@
+.Rproj.user
+.directory
+..gitignore.kate-swp
+*.tar.gz
+**/*.o
+**/*.a
+**/*.so
+*.log
+*.tmp
