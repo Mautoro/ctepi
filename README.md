@@ -68,6 +68,8 @@ legend( "bottom", legend = c("Quit smoking","Keep smoking"), col = c("blue", "re
 ```
 ![](README_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
+Certain individuals do not have weight data available for 1982. The `ecdfPI()` function allows for the inclusion of partial identification bands in the ECDF without assumptions.
+
 ``` r
 nhefs$wt82[nhefs$qsmk==0] |> ecdfPI() |> plot(col="red", col.bounds = "red", main="Weight (kg), 1982",
                                               xlim = range(c(nhefs$wt71,nhefs$wt82),na.rm = T) )
