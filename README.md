@@ -66,6 +66,7 @@ nhefs$wt71[nhefs$qsmk==1] |> ecdfPI() |> plot(col="blue",add=T)
 legend( "bottom", legend = c("Quit smoking","Keep smoking"), col = c("blue", "red"), 
         lty=1, cex = 0.8 ,inset = c(0,1) , xpd=TRUE, horiz=T, bty="n")
 ```
+![](README_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
 ``` r
 nhefs$wt82[nhefs$qsmk==0] |> ecdfPI() |> plot(col="red", col.bounds = "red", main="Weight (kg), 1982",
@@ -74,6 +75,7 @@ nhefs$wt82[nhefs$qsmk==1] |> ecdfPI() |> plot(col="blue",add=T)
 legend( "bottom", legend = c("Quit smoking","Keep smoking"), col = c("blue", "red"), 
         lty=1, cex = 0.8 ,inset = c(0,1) , xpd=TRUE, horiz=T, bty="n")
 ```
+![](README_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
 
 
