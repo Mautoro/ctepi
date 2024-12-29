@@ -13,8 +13,8 @@
 #' @importFrom grDevices rgb
 #' @export
 plotecdfbound <- function( F1, F2, x.limit = NULL, col.bounds="blue", alpha.bounds=0.1 ){
-  vals1 <- get("vals", envir = environment(F1) )
-  vals2 <- get("vals", envir = environment(F2) )
+  vals1 <- get("x", envir = environment(F1) )
+  vals2 <- get("x", envir = environment(F2) )
   
   if (length(x.limit) > 0) {
     if (length(x.limit) != 2) {
