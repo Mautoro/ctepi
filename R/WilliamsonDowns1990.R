@@ -16,6 +16,7 @@
 #' @param parallel A logical indicating whether parallel computation should be used (if `TRUE`, the `parallel` library will be employed). Default is `FALSE`.
 #' @param freeCores The number of CPU cores to reserve for other tasks when `parallel = TRUE`. Default is 1.
 #' @param eps11,eps12,eps01,eps02 Scalars defining the epsilon parameters for the "FourEpsilon" boundary method. Default values are 0.
+#' @param eta11,eta12,eta01,eta02 Scalars defining the eta parameters for the 4-\eqn{\eta} assumption. Default values are 0.
 #'
 #' @details
 #' One way to relax ignorability assumptions is by introducing tolerance for discrepancies between identified and non-identified distributions. The `FourEpsilon` boundaries are based on the following identification assumptions: .
@@ -54,7 +55,8 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
                                 delta.ldbudboptim = diff( range( Y[Z==1] ) - rev(range( Y[Z==0] )) )/gridsize, 
                                 includesupport=FALSE, addtoU=NULL,
                                 parallel=FALSE, freeCores=1,
-                                eps11=0,eps12=0,eps01=0,eps02=0){
+                                eps11=0,eps12=0,eps01=0,eps02=0,
+                                eta11=0,eta12=0,eta01=0,eta02=0){
   if ( is.null(y1.limit) ) {
     y1.limit <- c( min(Y[Z==1],na.rm = T) , max(Y[Z==1], na.rm = T) )
   }
@@ -62,31 +64,36 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
     y0.limit <- c( min(Y[Z==0],na.rm = T) , max(Y[Z==0], na.rm = T) )
   }
   
-  #<-># Lista para guardar las cotas ajustadas
+  multiOSlapply <- function(X, FUN, mc.cores = 1, ...) {
+    if (Sys.info()["sysname"] == "Windows") {
+      cl <- parallel::makeCluster(mc.cores)
+      on.exit(parallel::stopCluster(cl), add = TRUE) 
+      parallel::clusterExport(cl, ls(globalenv()))  
+      parallel::parLapply(cl, X, FUN, ...)
+    } else {
+      parallel::mclapply(X, FUN, mc.cores = mc.cores, ...)
+    }
+  }
+  
   rval <- list()
   i <- 0
   
-  #<-># cat(paste0("delta.u=", delta.u, "\ndelta.ldbudboptim=",delta.ldbudboptim,"\n"))
   
-  #<-># Funciones y soporte de variables
   func <- ctefunctions(Y,Z,y1.limit = y1.limit, y0.limit = y0.limit,
-                       eps11=eps11, eps12=eps12, eps01=eps01, eps02=eps02)
+                       eps11=eps11, eps12=eps12, eps01=eps01, eps02=eps02,
+                       eta11=eta11, eta12=eta12, eta01=eta01, eta02=eta02 )
   sop <- supportU(Y,Z,y1.limit = y1.limit, y0.limit = y0.limit)
   seqX <- function(X,d) seq( X[1],X[2] , d )
   
-  #<-># Valores de U = Y(1)-Y(0) sobre el que evalúo las cotas
-  #<-># Está mal usar este uu porque el rango de U cambia con y1.limit y y0.limit
   #uu <- seqX( range(sop$sopU) , delta.u) 
   uu <- seqX( y1.limit - rev(y0.limit) , delta.u)
   if (includesupport){
     uu <- sort( union(uu, sop$sopU) )
   }
-  #<->#uu <- sop$sopU
   
   yy1 <- sop$sopY1
   yy0 <- sop$sopY0
   
-  #<-># 1. Cotas para Y(1)-Y(0) bajo el supuesto de ignorabilidad
   if ( is.element("Ignorability",boundaries) ){
     i <- i+1
     ###
@@ -100,7 +107,7 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
                     sopY = addtoU) 
       }
       
-      Ignboundsp <- parallel::mclapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
+      Ignboundsp <- multiOSlapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
       
       Ignbounds <- data.frame(z = unlist(Ignboundsp)[3*c(1:length(Ignboundsp))-2],
                               ldb = unlist(Ignboundsp)[3*c(1:length(Ignboundsp))-1],
@@ -129,7 +136,6 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
     names(rval)[i] <- "Ignorability"
   }
   
-  #<-># 2, Cotas para Y(1)-Y(0) sin supuestos
   if ( is.element("NoAssumptions",boundaries) ){
     i <- i+1
     if (parallel) {
@@ -144,7 +150,7 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
                     sopY = addtoU) 
       }
       
-      NABoundsp <- parallel::mclapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
+      NABoundsp <- multiOSlapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
       
       NABounds <- data.frame(z = unlist(NABoundsp)[3*c(1:length(NABoundsp))-2],
                              ldb = unlist(NABoundsp)[3*c(1:length(NABoundsp))-1],
@@ -176,7 +182,6 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
   }
   
   
-  #<-># 3. Cotas para Y(1)-Y(0) con los supuestos epsilon
   if ( is.element("FourEpsilon",boundaries) ){
     i <- i+1
     
@@ -192,7 +197,7 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
                     sopY = addtoU) 
       }
       
-      e4Boundsp <- parallel::mclapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
+      e4Boundsp <- multiOSlapply( uu , ldbudboptimP , mc.cores = parallel::detectCores() - freeCores )
       
       e4Bounds <- data.frame(z = unlist(e4Boundsp)[3*c(1:length(e4Boundsp))-2],
                              ldb = unlist(e4Boundsp)[3*c(1:length(e4Boundsp))-1],
@@ -224,12 +229,7 @@ WilliamsonDowns1990 <- function(Y, Z,  y1.limit=NULL, y0.limit=NULL,
   }
   
   if (i==0) warning( paste0('There is not valid boundaries methods: "', paste0(boundaries, collapse = '", "'), '".\n') )
-  #<-># Puedo añadir un warning que indique si hay métodos que no están implementados. Para después.
   
-  #<-># debug
-  #<-># i <- i+1
-  #<-># rval[[i]] <- list( uu=uu )
-  #<->#names(rval)[i] <- "debug"
   rval
 }
 
