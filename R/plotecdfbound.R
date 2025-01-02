@@ -16,22 +16,21 @@ plotecdfbound <- function( F1, F2, x.limit = NULL, col.bounds="blue", alpha.boun
   vals1 <- get("x", envir = environment(F1) )
   vals2 <- get("x", envir = environment(F2) )
   
+  vals1 <- c( vals1 , max(vals1) + .Machine$double.eps*35)
+  vals2 <- c( vals2 , max(vals2) + .Machine$double.eps*35)
+  
   if (length(x.limit) > 0) {
     if (length(x.limit) != 2) {
       stop("Error: x.limit must be a vector of length 2.")
     } else {
-      #<-># Ordeno x.limit por si viene al revés (ej: c(6,4))
       x.limit <- range(x.limit)
-      #<-># Restrinjo valores a los límites indicados
       vals1 <- unique(c( x.limit[1] , vals1[vals1 >= x.limit[1] & vals1 <= x.limit[2]] , x.limit[2] ))
       vals2 <- unique(c( x.limit[1] , vals2[vals2 >= x.limit[1] & vals2 <= x.limit[2]] , x.limit[2] ))
     }
   }
   if (is.null(x.limit)) {
-    #<-># Para definir x.limit da lo mismo si tomo vals1 o vals2
     x.limit <- diff(range(vals1)) * c(-20,20) + range(vals1)
   }
-  #<-># Grafico cotas
   xx1aux <- rep( c(x.limit[1],vals1,x.limit[2]) ,each=2)
   xx2aux <- rep( c(x.limit[1],vals2,x.limit[2]) ,each=2)
   nn1 <- length(xx1aux)
