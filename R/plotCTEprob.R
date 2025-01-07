@@ -45,8 +45,8 @@ plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T,
   masses <- CTEpr$masses
   
   # Calculating the probabilities of negative and positive causal effects
-  p_negative_effect <- apply( masses[ masses$z < -alpha,-1] , 2, sum )
-  p_positive_effect <- apply( masses[ masses$z > alpha,-1] , 2, sum )
+  p_negative_effect <- apply( masses[ masses$cte < -alpha,-1] , 2, sum )
+  p_positive_effect <- apply( masses[ masses$cte > alpha,-1] , 2, sum )
   
   # Negative causal effect
   if (add) { # Drawing on existing plot
@@ -60,7 +60,7 @@ plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T,
   lines( p , p_positive_effect ,
          type = "l", col=colors[2], lty=lty)
   # No causal effect
-  ine <- (masses$z <= alpha) & (masses$z >= -alpha)
+  ine <- (masses$cte <= alpha) & (masses$cte >= -alpha)
   if ( sum( ine )>0 ) {
     p_no_effect <- apply( masses[ ine ,-1] , 2, sum )
     lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty)
