@@ -7,7 +7,7 @@ List CTEprobcpp(int n1, int n2, double a1, double b1, double a2, double b2, Nume
   int num_rows = (n1 + 1) * (n2 + 1);
   NumericMatrix results(num_rows, 5 + p.size());
 
-  // Inicializar las columnas fijas (w1, w2, u1, u2, z)
+  // Inicializar las columnas fijas (w1, w2, u1, u2, cte)
   int row_index = 0;
   for (int w1 = 0; w1 <= n1; w1++) {
     for (int w2 = 0; w2 <= n2; w2++) {
@@ -40,7 +40,7 @@ List CTEprobcpp(int n1, int n2, double a1, double b1, double a2, double b2, Nume
   namesresults[1] = "w2";
   namesresults[2] = "u1";
   namesresults[3] = "u2";
-  namesresults[4] = "z";
+  namesresults[4] = "cte";
   for (int i = 0; i < p.size(); i++) {
     namesresults[5 + i] = "p" + std::to_string(p[i]);
   }
