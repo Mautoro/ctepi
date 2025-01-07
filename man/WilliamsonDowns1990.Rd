@@ -20,7 +20,11 @@ WilliamsonDowns1990(
   eps11 = 0,
   eps12 = 0,
   eps01 = 0,
-  eps02 = 0
+  eps02 = 0,
+  eta11 = 0,
+  eta12 = 0,
+  eta01 = 0,
+  eta02 = 0
 )
 }
 \arguments{
@@ -47,6 +51,8 @@ WilliamsonDowns1990(
 \item{freeCores}{The number of CPU cores to reserve for other tasks when \code{parallel = TRUE}. Default is 1.}
 
 \item{eps11, eps12, eps01, eps02}{Scalars defining the epsilon parameters for the "FourEpsilon" boundary method. Default values are 0.}
+
+\item{eta11, eta12, eta01, eta02}{Scalars defining the eta parameters for the 4-\eqn{\eta} assumption. Default values are 0.}
 }
 \description{
 Implementation of the bounds for \eqn{U = Y_{1} - Y_{0}} from Williamson and Downs (1990) using partial identification bounds for the counterfactual distributions. The function returns step functions for the lower and upper bounds of the treatment effect distribution, \eqn{P(Y_{1} - Y_{0} \leq y)}, under different assumptions.

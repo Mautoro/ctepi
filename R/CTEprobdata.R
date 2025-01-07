@@ -35,7 +35,7 @@
 #' The function \code{plotCTEprob} can be used to visualize the probabilities of positive, negative, or no causal effect 
 #' for a given prior propensity \eqn{p}.
 #'
-#' @value 
+#' @return 
 #' If \code{covariates} is \code{FALSE}, \code{CTEprobdata} returns a list with the CTE(0) distribution over the possible worlds
 #' for each value in the \code{p} vector. The list also includes \code{probMZ}, containing probabilities identified in the 
 #' \eqn{\mathcal{M} \times \{0, 1\}} space:

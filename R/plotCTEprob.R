@@ -27,7 +27,7 @@
 #' The function calculates the probabilities of each of these events and plots them against the prior 
 #' propensity values.
 #'
-#' @value 
+#' @return 
 #' A list containing the following probability vectors:
 #' \itemize{
 #'   \item p_positive_effect: Probability of a positive causal effect.

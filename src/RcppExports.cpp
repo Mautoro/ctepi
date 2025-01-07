@@ -10,6 +10,23 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// CTEprobcpp
+List CTEprobcpp(int n1, int n2, double a1, double b1, double a2, double b2, NumericVector p);
+RcppExport SEXP _ctepi_CTEprobcpp(SEXP n1SEXP, SEXP n2SEXP, SEXP a1SEXP, SEXP b1SEXP, SEXP a2SEXP, SEXP b2SEXP, SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n1(n1SEXP);
+    Rcpp::traits::input_parameter< int >::type n2(n2SEXP);
+    Rcpp::traits::input_parameter< double >::type a1(a1SEXP);
+    Rcpp::traits::input_parameter< double >::type b1(b1SEXP);
+    Rcpp::traits::input_parameter< double >::type a2(a2SEXP);
+    Rcpp::traits::input_parameter< double >::type b2(b2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(CTEprobcpp(n1, n2, a1, b1, a2, b2, p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // aggregate_cpp
 NumericMatrix aggregate_cpp(NumericVector values, NumericVector groups, NumericVector levelgroup);
 RcppExport SEXP _ctepi_aggregate_cpp(SEXP valuesSEXP, SEXP groupsSEXP, SEXP levelgroupSEXP) {
@@ -55,6 +72,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_ctepi_CTEprobcpp", (DL_FUNC) &_ctepi_CTEprobcpp, 7},
     {"_ctepi_aggregate_cpp", (DL_FUNC) &_ctepi_aggregate_cpp, 3},
     {"_ctepi_ldbudboptimCpp", (DL_FUNC) &_ctepi_ldbudboptimCpp, 9},
     {"_ctepi_masaCpp", (DL_FUNC) &_ctepi_masaCpp, 1},
