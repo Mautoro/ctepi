@@ -15,6 +15,7 @@ plotCTEprob(
   lwd = 1,
   ylab = "Probability",
   ylim = c(0, 1),
+  cex.legend = 1,
   ...
 )
 }
@@ -38,6 +39,8 @@ plotCTEprob(
 \item{ylab}{Label for the y-axis. Default is \code{"Probability"}.}
 
 \item{ylim}{y-axis limits. Default is \code{c(0, 1)}.}
+
+\item{cex.legend}{Size of legend. Default is \code{c(0, 1)}.}
 
 \item{\dots}{Additional graphical parameters passed to the plot function.}
 }

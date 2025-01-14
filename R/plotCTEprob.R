@@ -16,6 +16,7 @@
 #' @param lwd Line width for the plot. Default is \code{1}.
 #' @param ylab Label for the y-axis. Default is \code{"Probability"}.
 #' @param ylim y-axis limits. Default is \code{c(0, 1)}.
+#' @param cex.legend Size of legend. Default is \code{c(0, 1)}.
 #' @param \dots Additional graphical parameters passed to the plot function.
 #'
 #' @details
@@ -40,7 +41,8 @@
 #' @export
 plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T, 
                          add=F, colors = c("blue3", "green3", "red3"),
-                         lty=1, lwd=1, ylab = "Probability", ylim=c(0,1), ...){
+                         lty=1, lwd=1, ylab = "Probability", ylim=c(0,1),
+                         cex.legend=1, ...){
   
   p <- CTEpr$p
   masses <- CTEpr$masses
@@ -70,7 +72,7 @@ plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T,
   if (addlegend) {
     legend("top", legend=c("No effect", "Possitive effect", "Negative effect"),
            col=colors, lty=1, xpd=TRUE, inset=c(0, -0.13),
-           horiz=T, bty="n", text.width = NA)
+           horiz=T, bty="n", text.width = NA, cex=cex.legend)
   }
   
   # Adding the alpha value at the bottom left
