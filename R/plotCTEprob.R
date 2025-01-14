@@ -13,6 +13,7 @@
 #' @param colors A vector of colors used for plotting the three categories: No effect, Positive effect, and Negative effect. Default is \code{c("blue3", "green3", "red3")}.
 #' @param add Logical value indicating whether to add to an existing plot (i.e., not creating a new plot). Default is \code{FALSE}.
 #' @param lty Line type for the plot. Default is \code{1}.
+#' @param lwd Line width for the plot. Default is \code{1}.
 #' @param ylab Label for the y-axis. Default is \code{"Probability"}.
 #' @param ylim y-axis limits. Default is \code{c(0, 1)}.
 #' @param \dots Additional graphical parameters passed to the plot function.
@@ -39,7 +40,7 @@
 #' @export
 plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T, 
                          add=F, colors = c("blue3", "green3", "red3"),
-                         lty=1, ylab = "Probability", ylim=c(0,1), ...){
+                         lty=1, lwd=1, ylab = "Probability", ylim=c(0,1), ...){
   
   p <- CTEpr$p
   masses <- CTEpr$masses
@@ -51,19 +52,19 @@ plotCTEprob <- function( CTEpr , alpha=0, displayalpha=T, addlegend=T,
   # Negative causal effect
   if (add) { # Drawing on existing plot
     lines( p , p_negative_effect , ylim=ylim,
-           type = "l", col=colors[3], lty=lty )
+           type = "l", col=colors[3], lty=lty , lwd=lwd)
   } else{ # New plot
     plot( p , p_negative_effect , ylim=ylim,
-          type = "l", col=colors[3], lty=lty, las=1, ylab = ylab, ...)
+          type = "l", col=colors[3], lty=lty, las=1, ylab = ylab, lwd=lwd, ...)
   }
   # Positive causal effect
   lines( p , p_positive_effect ,
-         type = "l", col=colors[2], lty=lty)
+         type = "l", col=colors[2], lty=lty, lwd=lwd)
   # No causal effect
   ine <- (masses$cte <= alpha) & (masses$cte >= -alpha)
   if ( sum( ine )>0 ) {
     p_no_effect <- apply( masses[ ine ,-1] , 2, sum )
-    lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty)
+    lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
   }
   
   if (addlegend) {

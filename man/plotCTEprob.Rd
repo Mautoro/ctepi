@@ -12,6 +12,7 @@ plotCTEprob(
   add = F,
   colors = c("blue3", "green3", "red3"),
   lty = 1,
+  lwd = 1,
   ylab = "Probability",
   ylim = c(0, 1),
   ...
@@ -31,6 +32,8 @@ plotCTEprob(
 \item{colors}{A vector of colors used for plotting the three categories: No effect, Positive effect, and Negative effect. Default is \code{c("blue3", "green3", "red3")}.}
 
 \item{lty}{Line type for the plot. Default is \code{1}.}
+
+\item{lwd}{Line width for the plot. Default is \code{1}.}
 
 \item{ylab}{Label for the y-axis. Default is \code{"Probability"}.}
 
