@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: ctepi R package: Cumulative Treatment Effect (CTE) with partial identification (PI) on R.
+title: ctepi R package - Cumulative Treatment Effect (CTE) with partial identification (PI) on R.
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
