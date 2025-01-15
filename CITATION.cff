@@ -1,0 +1,30 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: ctepi
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Mauricio
+    family-names: Toro-Cea
+    email: torocea@uc.cl
+    affiliation: Pontifical Catholic University of Chile
+    orcid: 'https://orcid.org/0009-0006-0255-8886'
+identifiers:
+  - type: url
+    value: 'https://github.com/Mautoro/ctepi'
+    description: GitHub repository
+repository-code: 'https://github.com/Mautoro/ctepi'
+abstract: >-
+  Cumulative Treatment Effect (CTE) with partial
+  identification (PI) on R.
+keywords:
+  - Statistics
+  - Causal inference
+  - Cumulative Treatment Effect
+license: GPL-3.0
+version: 0.1.0
+date-released: '2024-12-25'
