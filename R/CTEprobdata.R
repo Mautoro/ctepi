@@ -71,10 +71,11 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
     Yobs <- 1*(Yobs > y)
   }
   
-  nNA <- sum(is.na(Yobs))
+  nNAZ1 <- sum(is.na(Yobs[Zobs==1]))
+  nNAZ0 <- sum(is.na(Yobs[Zobs==0]))
   
   if ( !covariates ) { 
-    probs <- CTEprob( M = length(Yobs) , nNA = nNA, 
+    probs <- CTEprob( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
                       nZ1K1 = sum(Zobs[ !is.na(Yobs) ]),
                       nZ0K1 = sum(Zobs[ !is.na(Yobs) ] == 0),
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
@@ -87,7 +88,8 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       Yaux <- Yobs[filtro]
       Zaux <- Zobs[filtro]
       Xaux <- X[filtro,]
-      probs[[i]] <- CTEprob( M = sum(filtro) , nNA = sum(is.na(Yaux)), 
+      probs[[i]] <- CTEprob( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
+                             nNAZ0 = sum(is.na(Yaux[Zaux==0])),
                              nZ1K1 = sum(Zaux[ !is.na(Yaux) ]),
                              nZ0K1 = sum(Zaux[ !is.na(Yaux) ] == 0),
                              nY1Z1K1 = sum(Yaux==1 & Zaux == 1 , na.rm = T), 
@@ -95,7 +97,8 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
                              p = p )
       names(probs)[i] <- paste0(paste0(colnames(X),".", Xunique[i, ]), collapse = ",")
       probs[[i]]$probMZ$M   <- sum(filtro)
-      probs[[i]]$probMZ$nNA <- sum(is.na(Yaux))
+      probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))
+      probs[[i]]$probMZ$nNAZ0 <- sum(is.na(Yaux[Zaux==0]))
     }
   }
   
