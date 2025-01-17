@@ -4,12 +4,25 @@
 \alias{CTEprob}
 \title{Calculate the distribution of the Causal Treatment Effect (CTE) for a Dichotomous Outcome}
 \usage{
-CTEprob(M, nNA = 0, nZ1K1, nZ0K1, nY1Z1K1, nY1Z0K1, p, dec.prec = 13)
+CTEprob(
+  M,
+  nNAZ1 = 0,
+  nNAZ0 = 0,
+  nNA = NULL,
+  nZ1K1,
+  nZ0K1,
+  nY1Z1K1,
+  nY1Z0K1,
+  p,
+  dec.prec = 13
+)
 }
 \arguments{
 \item{M}{Total number of individuals in the population.}
 
-\item{nNA}{Total number of missing data in the observed outcome.}
+\item{nNAZ1, nNAZ0}{Use only if nNA is NULL. Number of missing data in the observed outcome for Zobs=1 and Zobs=0.}
+
+\item{nNA}{Number of missing data in the observed outcome. If nNA is NULL, nNAZ1+nNAZ0 is used.}
 
 \item{nZ1K1}{Number of statistical units with Z=1 and K=1.}
 
@@ -30,11 +43,25 @@ A list containing the CTE(0) distribution for a dichotomous outcome in the measu
 \item{cdf}{A data frame with the cumulative probability \eqn{P(CTE(0) \leq cte)}.}
 \item{probMZ}{Probabilities identified from the data:}
 \itemize{
-\item{probK1Z1}{\eqn{P(K = 1 | Z = 1)}}
-\item{probK1Z0}{\eqn{P(K = 1 | Z = 0)}}
-\item{probY1Z1K1}{\eqn{P(Y = 1 | Z = 1, K = 1)}}
-\item{probY1Z0K1}{\eqn{P(Y = 1 | Z = 0, K = 1)}}
+\item{probK1Z1}{Probability \eqn{P(K = 1 | Z = 1)}.}
+\item{probK1Z0}{Probability \eqn{P(K = 1 | Z = 0)}.}
+\item{probY1Z1K1}{Probability \eqn{P(Y = 1 | Z = 1, K = 1)}.}
+\item{probY1Z0K1}{Probability \eqn{P(Y = 1 | Z = 0, K = 1)}.}
 \item{p0}{The prior propensity where the probability of a positive causal effect equals the probability of a negative causal effect.}
+}
+\item{probassing}{A vector containing probabilies of assignment to treatments Z=1 and Z=0.}
+\item{Pi}{Probabilities identified from the data:}
+\itemize{
+\item{EpPi}{Expected value of \eqn{\Pi}.}
+\item{CDF_Pi}{CDF function of \eqn{\Pi}, \eqn{F_{\Pi,p}}.}
+\item{qPileft}{Left-continuous quasi-inverse of \eqn{F_{\Pi,p}}.}
+\item{qPiright}{Right-continuous quasi-inverse of \eqn{F_{\Pi,p}}.}
+\item{q0025left}{Quantile 0.025 of \eqn{\Pi} using the left-continuous quasi-inverse.}
+\item{q0025right}{Quantile 0.025 of \eqn{\Pi} using the right-continuous quasi-inverse.}
+\item{q0975left}{Quantile 0.975 of \eqn{\Pi} using the left-continuous quasi-inverse.}
+\item{q0975right}{Quantile 0.975 of \eqn{\Pi} using the right-continuous quasi-inverse.}
+\item{q0025}{Lower bound of the 95\\% credible interval of \eqn{Pi}.}
+\item{q0975}{Upper bound of the 95\\% credible interval of \eqn{Pi}.}
 }
 }
 \description{
@@ -52,7 +79,7 @@ Consider the space of all possible worlds where for each world, there exists an 
 where \eqn{Y^*} coincides with the observed outcome \eqn{Y_{\text{obs}}} for the observed statistical units.
 For each \eqn{Y^*}, the CTE(0) is computed. The CTE(0) is a random variable over all possible worlds.
 
-The value \eqn{p} represents the prior probability that each unobserved outcome is 1. This prior probability is known as
+The value \eqn{p} represents the prior probability that each unobserved outcome is 1. This prior probability is denoted as
 the propensity for success. Assuming a common \eqn{p} for all unobserved outcomes implies the absence of a causal effect.
 Based on \eqn{p}, the probability of each possible world is determined. If all possible worlds are equally likely, \eqn{p = 0.5},
 which assumes no causal effect. This assumption becomes unrealistic when the outcome's success probability is significantly
