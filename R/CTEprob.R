@@ -89,9 +89,13 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
   
   probassingZ1 <- (nNAZ1 + nZ1K1)/M
   probassingZ0 <- (nNAZ0 + nZ0K1)/M
+  # P(Z=1|K=1) and P(Z=0|K=1)
+  probZ1K1 <- nZ1K1 / (M-nNA)
+  probZ0K1 <- nZ0K1 / (M-nNA)
   
   probMZ <- list(probK1Z1 = probK1Z1, probK1Z0 = probK1Z0, 
-                 probY1Z1K1 = probY1Z1K1, probY1Z0K1 = probY1Z0K1)
+                 probY1Z1K1 = probY1Z1K1, probY1Z0K1 = probY1Z0K1,
+                 probZ1K1 = probZ1K1 , probZ0K1 = probZ0K1)
   
   if (probK1Z1 == 0.5) {
     probMZ$p0 <- "p0 does not exist"
