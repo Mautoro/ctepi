@@ -102,6 +102,8 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
     }
   }
   
+  probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
+  
   probs
 }
 
