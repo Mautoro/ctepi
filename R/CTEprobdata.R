@@ -81,6 +81,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
                       nY1Z0K1 = sum(Yobs==1 & Zobs == 0 , na.rm = T), 
                       p = p )
+    probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
   } else {
     probs <- list()
     for ( i in 1:nrow(Xunique) ) {
@@ -99,10 +100,9 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       probs[[i]]$probMZ$M   <- sum(filtro)
       probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))
       probs[[i]]$probMZ$nNAZ0 <- sum(is.na(Yaux[Zaux==0]))
+      probs[[i]]$data <- list( Yobs=Yaux, Zobs=Zaux, X=Xaux, y=y)
     }
   }
-  
-  probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
   
   probs
 }
