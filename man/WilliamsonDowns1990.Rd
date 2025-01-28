@@ -11,8 +11,9 @@ WilliamsonDowns1990(
   y0.limit = NULL,
   boundaries = c("Ignorability", "NoAssumptions", "FourEpsilon"),
   gridsize = 2000,
-  delta.u = diff(range(Y[Z == 1]) - rev(range(Y[Z == 0])))/gridsize,
-  delta.ldbudboptim = diff(range(Y[Z == 1]) - rev(range(Y[Z == 0])))/gridsize,
+  delta.u = diff(range(Y[Z == 1], na.rm = T) - rev(range(Y[Z == 0], na.rm = T)))/gridsize,
+  delta.ldbudboptim = diff(range(Y[Z == 1], na.rm = T) - rev(range(Y[Z == 0], na.rm =
+    T)))/gridsize,
   includesupport = FALSE,
   addtoU = NULL,
   parallel = FALSE,
