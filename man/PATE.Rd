@@ -4,7 +4,7 @@
 \alias{PATE}
 \title{Partial Average Treatment Effect (PATE)}
 \usage{
-PATE(Y, Z, y.limit = NULL)
+PATE(Y, Z, y.limit = NULL, ...)
 }
 \arguments{
 \item{Y}{A numeric vector of observed outcomes.}
@@ -12,6 +12,8 @@ PATE(Y, Z, y.limit = NULL)
 \item{Z}{A numeric vector of treatment variables.}
 
 \item{y.limit}{A numeric vector of length 2 specifying the limits for the outcome. Defaults to the minimum and maximum of \code{Y}.}
+
+\item{...}{Aditional parameters for ctefunctions.}
 }
 \value{
 A list with the following elements:

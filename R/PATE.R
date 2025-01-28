@@ -6,6 +6,7 @@
 #' @param Y A numeric vector of observed outcomes.
 #' @param Z A numeric vector of treatment variables.
 #' @param y.limit A numeric vector of length 2 specifying the limits for the outcome. Defaults to the minimum and maximum of `Y`.
+#' @param ... Aditional parameters for ctefunctions.
 #'
 #' @return A list with the following elements:
 #' \item{CTEemp}{The CTE function under ignorability assumption.}
@@ -19,7 +20,7 @@
 #' result <- PATE(Y = c(1, 2, 3, 4, 5), Z = c(0, 1, 0, 1, 1))
 #' 
 #' @export
-PATE <- function(Y,Z, y.limit=NULL){
+PATE <- function(Y,Z, y.limit=NULL, ...){
   
   if ( is.null(y.limit) ) {
     y.limit <- c( min(Y,na.rm = T) , max(Y, na.rm = T) )
@@ -28,7 +29,7 @@ PATE <- function(Y,Z, y.limit=NULL){
   }
   
   y <- Y |> unique() |> sort()
-  func <- ctefunctions(Y,Z)
+  func <- ctefunctions(Y,Z, y1.limit = y.limit, y0.limit = y.limit, ...)
   
   PATEemp <- integrate.sf( func$CTE )
   PATEempPlus <- integrate.sf( func$CTEplus )
