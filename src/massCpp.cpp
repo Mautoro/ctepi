@@ -1,7 +1,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// [[Rcpp::export("massCpp")]]
+// [[Rcpp::export]]
 NumericMatrix massCpp(NumericMatrix matriz) {
   int m = matriz.nrow();
   int n = matriz.ncol();
