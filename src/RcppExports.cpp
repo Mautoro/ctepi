@@ -59,14 +59,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// masaCpp
-NumericMatrix masaCpp(NumericMatrix matriz);
-RcppExport SEXP _ctepi_masaCpp(SEXP matrizSEXP) {
+// massCpp
+NumericMatrix massCpp(NumericMatrix matriz);
+RcppExport SEXP _ctepi_massCpp(SEXP matrizSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type matriz(matrizSEXP);
-    rcpp_result_gen = Rcpp::wrap(masaCpp(matriz));
+    rcpp_result_gen = Rcpp::wrap(massCpp(matriz));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -75,7 +75,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ctepi_CTEprobcpp", (DL_FUNC) &_ctepi_CTEprobcpp, 7},
     {"_ctepi_aggregate_cpp", (DL_FUNC) &_ctepi_aggregate_cpp, 3},
     {"_ctepi_ldbudboptimCpp", (DL_FUNC) &_ctepi_ldbudboptimCpp, 9},
-    {"_ctepi_masaCpp", (DL_FUNC) &_ctepi_masaCpp, 1},
+    {"_ctepi_massCpp", (DL_FUNC) &_ctepi_massCpp, 1},
     {NULL, NULL, 0}
 };
 

@@ -13,7 +13,7 @@ ldbudboptimCpp <- function(z_values, F1, F2, F3, F4, x_limit, y_limit, delta = 0
     .Call('_ctepi_ldbudboptimCpp', PACKAGE = 'ctepi', z_values, F1, F2, F3, F4, x_limit, y_limit, delta, sopY)
 }
 
-masaCpp <- function(matriz) {
-    .Call('_ctepi_masaCpp', PACKAGE = 'ctepi', matriz)
+massCpp <- function(matriz) {
+    .Call('_ctepi_massCpp', PACKAGE = 'ctepi', matriz)
 }
 
