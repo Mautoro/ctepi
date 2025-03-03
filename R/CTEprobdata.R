@@ -54,7 +54,7 @@
 #'
 #'
 #' @export
-CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F) {
+CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05) {
   if ( length(Yobs) != length(Zobs) ) stop("Yobs and Zobs must have the same length")
   
   if ( !is.null(X) ) {
@@ -80,7 +80,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
                       nZ0K1 = sum(Zobs[ !is.na(Yobs) ] == 0),
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
                       nY1Z0K1 = sum(Yobs==1 & Zobs == 0 , na.rm = T), 
-                      p = p )
+                      p = p , alpha=alpha )
     probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
   } else {
     probs <- list()
@@ -95,7 +95,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
                              nZ0K1 = sum(Zaux[ !is.na(Yaux) ] == 0),
                              nY1Z1K1 = sum(Yaux==1 & Zaux == 1 , na.rm = T), 
                              nY1Z0K1 = sum(Yaux==1 & Zaux == 0 , na.rm = T), 
-                             p = p )
+                             p = p  , alpha=alpha )
       names(probs)[i] <- paste0(paste0(colnames(X),".", Xunique[i, ]), collapse = ",")
       probs[[i]]$probMZ$M   <- sum(filtro)
       probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))

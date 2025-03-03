@@ -4,7 +4,15 @@
 \alias{CTEprobdata}
 \title{Calculate the Causal Treatment Effect (CTE) distribution for real data with dichotomous outcome}
 \usage{
-CTEprobdata(Yobs, Zobs, X = NULL, p = c(0:60)/60, y = NULL, covariates = F)
+CTEprobdata(
+  Yobs,
+  Zobs,
+  X = NULL,
+  p = c(0:60)/60,
+  y = NULL,
+  covariates = F,
+  alpha = 0.05
+)
 }
 \arguments{
 \item{Yobs}{A vector of observed outcomes. A dichotomous variable. If \code{Yobs} is not dichotomous, it is
