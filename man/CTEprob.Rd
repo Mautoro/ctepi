@@ -14,7 +14,8 @@ CTEprob(
   nY1Z1K1,
   nY1Z0K1,
   p,
-  dec.prec = 13
+  dec.prec = 13,
+  alpha = 0.05
 )
 }
 \arguments{
@@ -49,7 +50,7 @@ A list containing the CTE(0) distribution for a dichotomous outcome in the measu
 \item{probY1Z0K1}{Probability \eqn{P(Y = 1 | Z = 0, K = 1)}.}
 \item{p0}{The prior propensity where the probability of a positive causal effect equals the probability of a negative causal effect.}
 }
-\item{probassing}{A vector containing probabilies of assignment to treatments Z=1 and Z=0.}
+\item{probassing}{A vector containing probabilies of assignment to treatments Z=1 and Z=0.}Evangelion 3.0+1.0 (2021)
 \item{Pi}{Probabilities identified from the data:}
 \itemize{
 \item{EpPi}{Expected value of \eqn{\Pi}.}

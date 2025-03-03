@@ -43,7 +43,7 @@
 #'    \item{probY1Z0K1}{Probability \eqn{P(Y = 1 | Z = 0, K = 1)}.}
 #'    \item{p0}{The prior propensity where the probability of a positive causal effect equals the probability of a negative causal effect.}
 #'  }
-#' \item{probassing}{A vector containing probabilies of assignment to treatments Z=1 and Z=0.}
+#' \item{probassing}{A vector containing probabilies of assignment to treatments Z=1 and Z=0.}Evangelion 3.0+1.0 (2021)
 #' \item{Pi}{Probabilities identified from the data:}
 #'  \itemize{
 #'    \item{EpPi}{Expected value of \eqn{\Pi}.}
@@ -66,7 +66,7 @@
 #' result$cdf
 #'
 #' @export
-CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY1Z0K1, p, dec.prec=13) {
+CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY1Z0K1, p, dec.prec=13, alpha=0.05) {
   
   if ( is.null(nNA) ) {
     nNA <- nNAZ1 + nNAZ0
@@ -129,6 +129,7 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
   CDF_Pi <- list()
   EpPi <- c()
   q0025left <- q0025right <- q0975left <- q0975right <- c()
+  qalpha2 <- q1malpha2 <- c()
   qPileft <- list()
   qPiright <- list()
   
@@ -149,12 +150,16 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
     # Computing quantiles
     qileft  <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "left")
     qiright <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "right")
+    # Deprecated. By compatibility:
     q0025left  <- c( q0025left , qileft(0.025) )
     q0025right <- c( q0025right , qiright(0.025) )
     q0975left  <- c( q0975left , qileft(0.975) )
     q0975right <- c( q0975right , qiright(0.975) )
     qPileft[[i]]  <- qileft   # saving F_{\pi,p}^{(-1)}
     qPiright[[i]] <- qiright  # saving F_{\pi,p}^{-1}
+    # Quantiles of alpha/2 and 1-alpha/2
+    qalpha2 <- c( qalpha2 , qiright( alpha/2 ) )
+    q1malpha2  <- c( q1malpha2 , qileft( 1-alpha/2 ) )
   }
   
   q0025 <- q0025right
@@ -164,7 +169,8 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
               qPileft=qPileft , qPiright=qPiright,
               q0025left=q0025left , q0025right=q0025right, 
               q0975left=q0975left , q0975right=q0975right, 
-              q0025=q0025 , q0975=q0975 )
+              q0025=q0025 , q0975=q0975 , 
+              qalpha2=qalpha2 , q1malpha2=q1malpha2 )
   
   list( masses=masses, cdf=cdf , p=p , probMZ=probMZ,
         probassing = c(probassingZ1=probassingZ1, probassingZ0=probassingZ0) ,
