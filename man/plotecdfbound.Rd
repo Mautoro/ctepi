@@ -4,7 +4,15 @@
 \alias{plotecdfbound}
 \title{Plot Partial Identification Bounds}
 \usage{
-plotecdfbound(F1, F2, x.limit = NULL, col.bounds = "blue", alpha.bounds = 0.1)
+plotecdfbound(
+  F1,
+  F2,
+  x.limit = NULL,
+  col.bounds = "blue",
+  alpha.bounds = 0.1,
+  lty = 1,
+  col.lines = NA
+)
 }
 \arguments{
 \item{F1, }{F2 Lower and upper partial identification bounds. F1 and F2 must be step functios.}

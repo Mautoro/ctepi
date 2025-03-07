@@ -12,7 +12,7 @@
 #'
 #' @importFrom grDevices rgb
 #' @export
-plotecdfbound <- function( F1, F2, x.limit = NULL, col.bounds="blue", alpha.bounds=0.1 ){
+plotecdfbound <- function( F1, F2, x.limit = NULL, col.bounds="blue", alpha.bounds=0.1 , lty=1, col.lines=NA){
   vals1 <- get("x", envir = environment(F1) )
   vals2 <- get("x", envir = environment(F2) )
   
@@ -40,7 +40,7 @@ plotecdfbound <- function( F1, F2, x.limit = NULL, col.bounds="blue", alpha.boun
   xx2 <- rev(xx2aux[-c(1,nn2)])
   yy2 <- F2( rev(xx2aux)[-c(1,2)])
   
-  polygon( c(xx1, xx2) , c(yy1,yy2) ,  
-           border = NA , col=AlphaCol(col.bounds,alpha.bounds))  
+  polygon( c(xx1, xx2) , c(yy1,yy2) ,  lty=lty,
+           border = col.lines , col=AlphaCol(col.bounds,alpha.bounds))  
 } 
 
