@@ -11,7 +11,8 @@ CTEprobdata(
   p = c(0:60)/60,
   y = NULL,
   covariates = F,
-  alpha = 0.05
+  alpha = 0.05,
+  suppressMessages = FALSE
 )
 }
 \arguments{

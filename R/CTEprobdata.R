@@ -54,7 +54,7 @@
 #'
 #'
 #' @export
-CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05) {
+CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05, suppressMessages=FALSE) {
   if ( length(Yobs) != length(Zobs) ) stop("Yobs and Zobs must have the same length")
   
   if ( !is.null(X) ) {
@@ -67,7 +67,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   
   if ( is.null(y) ) {
   } else {
-    message(paste0("The outcome variable is 1 if Yobs > y, 0 if Yobs ≤ y, and NA if Yobs is NA. y=",y,"."))
+    if( !suppressMessages ) { message(paste0("The outcome variable is 1 if Yobs > y, 0 if Yobs ≤ y, and NA if Yobs is NA. y=",y,".")) }
     Yobs <- 1*(Yobs > y)
   }
   
