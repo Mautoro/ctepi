@@ -98,19 +98,27 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       probs$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
     }
   } else {
+    
     probs <- list()
     for ( i in 1:nrow(Xunique) ) {
       filtro <- apply(X, 1, function(row) all(row == Xunique[i, ])) 
       Yaux <- Yobs[filtro]
       Zaux <- Zobs[filtro]
       Xaux <- X[filtro,]
+      
+      if ( p == "PY1K1" ) {
+        pp <- mean(Yaux==1, na.rm = T)
+      } else {
+        pp <- p
+      }
+      
       probs[[i]] <- CTEprob( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
                              nNAZ0 = sum(is.na(Yaux[Zaux==0])),
                              nZ1K1 = sum(Zaux[ !is.na(Yaux) ]),
                              nZ0K1 = sum(Zaux[ !is.na(Yaux) ] == 0),
                              nY1Z1K1 = sum(Yaux==1 & Zaux == 1 , na.rm = T), 
                              nY1Z0K1 = sum(Yaux==1 & Zaux == 0 , na.rm = T), 
-                             p = p  , alpha=alpha )
+                             p = pp  , alpha=alpha )
       names(probs)[i] <- paste0(paste0(colnames(X),".", Xunique[i, ]), collapse = ",")
       probs[[i]]$probMZ$M   <- sum(filtro)
       probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))
