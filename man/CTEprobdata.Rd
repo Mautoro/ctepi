@@ -23,7 +23,7 @@ transformed into a dichotomous variable using the threshold \code{y}.}
 
 \item{X}{A matrix of covariates for each individual. It can be used for calculating conditional \eqn{CTE(0|X=x)} distributions.}
 
-\item{p}{A vector of prior propensity values for which the CTE distribution is calculated.}
+\item{p}{A vector of prior propensity values for which the CTE distribution is calculated. If \code{p} is equal to "PY1K1", then the prior propensity \eqn{p} is set equal to the probability \eqn{P(Y=1|K=1)}.}
 
 \item{y}{If \code{NULL}, \code{Yobs} is treated as a dichotomous variable. If provided, it is used as a threshold to create
 a dichotomous outcome variable: \code{Y > y}.}

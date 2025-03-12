@@ -6,7 +6,7 @@
 #' transformed into a dichotomous variable using the threshold \code{y}.
 #' @param Zobs A vector of observed treatments (\code{0} or \code{1}).
 #' @param X A matrix of covariates for each individual. It can be used for calculating conditional \eqn{CTE(0|X=x)} distributions.
-#' @param p A vector of prior propensity values for which the CTE distribution is calculated.
+#' @param p A vector of prior propensity values for which the CTE distribution is calculated. If \code{p} is equal to "PY1K1", then the prior propensity \eqn{p} is set equal to the probability \eqn{P(Y=1|K=1)}.
 #' @param y If \code{NULL}, \code{Yobs} is treated as a dichotomous variable. If provided, it is used as a threshold to create 
 #' a dichotomous outcome variable: \code{Y > y}.
 #' @param covariates A logical value indicating whether the \eqn{CTE(0)} distribution should be calculated for each subset defined by the covariates 
@@ -75,13 +75,28 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   nNAZ0 <- sum(is.na(Yobs[Zobs==0]))
   
   if ( !covariates ) { 
+    
+    if ( p == "PY1K1" ) {
+      pp <- mean(Yobs==1, na.rm = T)
+    } else {
+      pp <- p
+    }
+    
     probs <- CTEprob( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
                       nZ1K1 = sum(Zobs[ !is.na(Yobs) ]),
                       nZ0K1 = sum(Zobs[ !is.na(Yobs) ] == 0),
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
                       nY1Z0K1 = sum(Yobs==1 & Zobs == 0 , na.rm = T), 
-                      p = p , alpha=alpha )
+                      p = pp , alpha=alpha )
     probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
+    # gamma factor: proportion between CTEign and E(Pi)
+    if ( p == "PY1K1" ) {
+      n1 <- length(Yobs) - sum(Zobs[ !is.na(Yobs) ])
+      n2 <- sum(Zobs[ !is.na(Yobs) ]) + (nNAZ1 + nNAZ0)
+      probK1Z1 <- (length(Yobs) - n1) / length(Yobs)
+      probK1Z0 <- (length(Yobs) - n2) / length(Yobs)
+      probs$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
+    }
   } else {
     probs <- list()
     for ( i in 1:nrow(Xunique) ) {
@@ -101,6 +116,14 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))
       probs[[i]]$probMZ$nNAZ0 <- sum(is.na(Yaux[Zaux==0]))
       probs[[i]]$data <- list( Yobs=Yaux, Zobs=Zaux, X=Xaux, y=y)
+      # gamma factor: proportion between CTEign and E(Pi)
+      if ( p == "PY1K1" ) {
+        n1 <- probs[[i]]$probMZ$M - sum(Zaux[ !is.na(Yaux) ])
+        n2 <- sum(Zaux[ !is.na(Yaux) ]) + (probs[[i]]$probMZ$nNAZ1 + probs[[i]]$probMZ$nNAZ0)
+        probK1Z1 <- (probs[[i]]$probMZ$M - n1) / probs[[i]]$probMZ$M
+        probK1Z0 <- (probs[[i]]$probMZ$M - n2) / probs[[i]]$probMZ$M
+        probs[[i]]$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
+      }
     }
   }
   
