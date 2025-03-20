@@ -118,12 +118,9 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
     stop(paste0('Error: y0.limit[2] should be greater than min(Y[Z==0]) = ',YZ0max,'.')) 
   }
   
-  #<-># Añadir verificación para los epsilon y eta que estén entre 0 y 1.
   
   dataset <- data.frame( Y , Z )
-  #<-># Si na.rm es TRUE, quito los NA 
   if (na.rm) { dataset <- dataset[ !is.na(Y) , ] }
-  #<-># Ojo: sort() elimina los NA
   yz1 <- sort(Y[Z==1])
   yz0 <- sort(Y[Z==0])
   yvals <- sort(Y)
@@ -141,16 +138,12 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   pZ1 <- sum(dataset$Z==1) / nrow(dataset)
   pZ0 <- sum(dataset$Z==0) / nrow(dataset)
   
-  #<-># F1, F2, F3, F4
-  #<-># Cotas de identificación parcial sin supuestos
-  #<-># Las cotas de FY1-FY0 son: F1-F4 <= FY1-FY0 <= F2-F3
   
   vals1 <- unique(yz1)
   vals0 <- unique(yz0)
   cumsumpY1Z1W1 <- cumsum(tabulate(match(yz1, vals1)))/nz1w1
   cumsumpY0Z0W1 <- cumsum(tabulate(match(yz0, vals0)))/nz0w1
   
-  #<-># P( Y(1)<=y | Z=1 ) y P( Y(0)<=y | Z=0 ) (sin usar ecdf())
   ecdfYZ1 <- approxfun(vals1, cumsumpY1Z1W1 , method = "constant", 
                        yleft = 0, yright = 1, f = 0, ties = "ordered")
   ecdfYZ0 <- approxfun(vals0, cumsumpY0Z0W1, method = "constant", 
@@ -158,7 +151,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   class(ecdfYZ1) <- c("stepfun", class(ecdfYZ1))
   class(ecdfYZ0) <- c("stepfun", class(ecdfYZ0))
   
-  #<-># CTE y ATE bajo ignorabilidad
   CTEvals <- ecdfYZ0(yvals) - ecdfYZ1(yvals)
   CTE <- approxfun(yvals, CTEvals , 
                    method = "constant", yleft = 0, yright = 0, f = 0, ties = "ordered")
@@ -174,7 +166,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   class(CTEplus) <- c("stepfun", class(CTEplus))
   class(CTEminus) <- c("stepfun", class(CTEminus))
   
-  #<-># Cotas para P( Y(1)<=y | Z=1 , W=1 ) y P( Y(0)<=y | Z=0 , W=1 ) sin supuestos
   y_valsF1 <- pZ1 * cumsumpY1Z1W1
   y_valsF2 <- pZ0 + y_valsF1
   y_valsF3 <- pZ0 * cumsumpY0Z0W1
@@ -188,7 +179,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   F4 <- approxfun(vals0, y_valsF4, 
                   method = "constant", yleft = pZ1, yright = 1, f = 0, ties = "ordered")
   
-  #<-># Cotas F1, F2, F3 y F4 con supuesto de soporte acotado a y1.limit y y0.limit.
   y_valsF1[vals1>=y1.limit[2]] <- 1
   FlY1 <- approxfun( c(vals1,y1.limit[2]) , c( pZ1 * cumsumpY1Z1W1 , 1) , 
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
@@ -200,7 +190,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
   
     
-  #<-># Cotas usando epsilon11, epsilon12, epsilon01, epsilon02:
   y_valsf1eps <- cumsumpY1Z1W1 * (1-pW0Z1) * pZ1  +  pmax( 0 , cumsumpY1Z1W1-eta12) * pW0Z1 * pZ1  +
     pmax( 0 , -eps12 + cumsumpY1Z1W1 * (1-pW0Z1) + pW0Z1 * pmax( 0 , cumsumpY1Z1W1-eta12) ) * pZ0
   
@@ -222,18 +211,18 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   F4epsilon <- approxfun(vals0, y_valsf4eps, 
                          method = "constant", yleft = min(y_valsf4eps), yright = max(y_valsf4eps), f = 0, ties = "ordered")
   
-  #<-># Cotas identificación parcial en función de cuatro epsilon (supuesto (27) de la presentación)
-  FlY1eps <- approxfun( c(vals1,y1.limit[2]) , c( y_valsf1eps , 1) , 
+  #FlY1eps <- approxfun( c(vals1,y1.limit[2]) , c( y_valsf1eps , 1) , 
+  #                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
+  # Arreglar de la misma manera en FlY1
+  FlY1eps <- approxfun( c(y1.limit[1],vals1,y1.limit[2]) , c( y_valsf1eps[1], y_valsf1eps , 1) , 
                         method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FuY1eps <- approxfun( c(y1.limit[1],vals1) , c( min(y_valsf2eps) , y_valsf2eps ) , 
+  FuY1eps <- approxfun( c(y1.limit[1],vals1, y1.limit[2]) , c( min(y_valsf2eps) , y_valsf2eps , 1 ) , 
                         method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FlY0eps <- approxfun( c(vals0,y0.limit[2]) , c( y_valsf3eps ,1), 
+  FlY0eps <- approxfun( c(y0.limit[1],vals0,y0.limit[2]) , c( y_valsf3eps[1], y_valsf3eps ,1), 
                         method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FuY0eps <- approxfun( c(y0.limit[1],vals0) , c( min(y_valsf4eps) , y_valsf4eps ), 
+  FuY0eps <- approxfun( c(y0.limit[1],vals0, y0.limit[2]) , c( min(y_valsf4eps) , y_valsf4eps , 1), 
                         method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
   
-  #<-># Defino clases de funciones como stepfun
-  #<-># Guardo las FlY1,..., FlY1eps,... como ecdf para graficarlas como ecdf
   class(F1) <- c("ecdf", "stepfun", class(F1))
   class(F2) <- c("ecdf", "stepfun", class(F2))
   class(F3) <- c("ecdf", "stepfun", class(F3))
@@ -251,7 +240,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   class(FlY0eps) <- c("ecdf", "stepfun", class(FlY0eps))
   class(FuY0eps) <- c("ecdf", "stepfun", class(FuY0eps))
   
-  #<-># Exporto ECDF y cotas de identificación parcial sin supuestos. 
   list( ecdfYZ1 = ecdfYZ1 , 
         ecdfYZ0 = ecdfYZ0 ,
         pZ1=pZ1,
