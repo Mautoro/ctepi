@@ -180,13 +180,13 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
                   method = "constant", yleft = pZ1, yright = 1, f = 0, ties = "ordered")
   
   y_valsF1[vals1>=y1.limit[2]] <- 1
-  FlY1 <- approxfun( c(vals1,y1.limit[2]) , c( pZ1 * cumsumpY1Z1W1 , 1) , 
+  FlY1 <- approxfun( c(y1.limit[1],vals1,y1.limit[2]) , c( pZ1 * cumsumpY1Z1W1[1], pZ1 * cumsumpY1Z1W1 , 1) , 
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FuY1 <- approxfun( c(y1.limit[1],vals1) , c(pZ0,pZ0 + pZ1 * cumsumpY1Z1W1) , 
+  FuY1 <- approxfun( c(y1.limit[1],vals1,y1.limit[2]) , c(pZ0,pZ0 + pZ1 * cumsumpY1Z1W1,1) , 
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FlY0 <- approxfun( c(vals0,y0.limit[2]) , c(pZ0 * cumsumpY0Z0W1,1), 
+  FlY0 <- approxfun( c(y0.limit[1],vals0,y0.limit[2]) , c(pZ0 * cumsumpY0Z0W1[1], pZ0 * cumsumpY0Z0W1,1), 
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  FuY0 <- approxfun( c(y0.limit[1],vals0) , c(pZ1,pZ1 + pZ0 * cumsumpY0Z0W1), 
+  FuY0 <- approxfun( c(y0.limit[1],vals0,y0.limit[2]) , c(pZ1,pZ1 + pZ0 * cumsumpY0Z0W1,1), 
                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
   
     
@@ -211,9 +211,6 @@ ctefunctions <- function(Y, Z, y1.limit=NULL, y0.limit=NULL,
   F4epsilon <- approxfun(vals0, y_valsf4eps, 
                          method = "constant", yleft = min(y_valsf4eps), yright = max(y_valsf4eps), f = 0, ties = "ordered")
   
-  #FlY1eps <- approxfun( c(vals1,y1.limit[2]) , c( y_valsf1eps , 1) , 
-  #                      method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
-  # Arreglar de la misma manera en FlY1
   FlY1eps <- approxfun( c(y1.limit[1],vals1,y1.limit[2]) , c( y_valsf1eps[1], y_valsf1eps , 1) , 
                         method = "constant", yleft = 0, yright = 1, f = 0, ties = "ordered")
   FuY1eps <- approxfun( c(y1.limit[1],vals1, y1.limit[2]) , c( min(y_valsf2eps) , y_valsf2eps , 1 ) , 
