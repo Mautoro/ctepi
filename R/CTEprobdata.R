@@ -97,7 +97,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
                       p = pp , alpha=alpha )
     probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
     # gamma factor: proportion between CTEign and E(Pi)
-    if ( p == "PY1K1" ) {
+    if ( length(p) == 1 & any(p == "PY1K1") ) {
       n1 <- length(Yobs) - sum(Zobs[ !is.na(Yobs) ])
       n2 <- sum(Zobs[ !is.na(Yobs) ]) + (nNAZ1 + nNAZ0)
       probK1Z1 <- (length(Yobs) - n1) / length(Yobs)
@@ -113,7 +113,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       Zaux <- Zobs[filtro]
       Xaux <- X[filtro,]
       
-      if ( p == "PY1K1" ) {
+      if ( length(p) == 1 & any(p == "PY1K1") ) {
         pp <- mean(Yaux==1, na.rm = T)
       } else {
         pp <- p
@@ -132,7 +132,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       probs[[i]]$probMZ$nNAZ0 <- sum(is.na(Yaux[Zaux==0]))
       probs[[i]]$data <- list( Yobs=Yaux, Zobs=Zaux, X=Xaux, y=y)
       # gamma factor: proportion between CTEign and E(Pi)
-      if ( p == "PY1K1" ) {
+      if ( length(p) == 1 & any(p == "PY1K1") ) {
         n1 <- probs[[i]]$probMZ$M - sum(Zaux[ !is.na(Yaux) ])
         n2 <- sum(Zaux[ !is.na(Yaux) ]) + (probs[[i]]$probMZ$nNAZ1 + probs[[i]]$probMZ$nNAZ0)
         probK1Z1 <- (probs[[i]]$probMZ$M - n1) / probs[[i]]$probMZ$M
