@@ -64,7 +64,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   } else {
     if( covariates ) stop("X is NULL and covariates is TRUE.")
   }
-  if ( is.character(p) & p != "PY1K1" ) {
+  if ( any(is.character(p)) & ( length(p) > 1 | ! any(p == "PY1K1") ) ) {
     stop("Insert a valid value for p.")
   }
   
