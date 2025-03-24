@@ -64,6 +64,9 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   } else {
     if( covariates ) stop("X is NULL and covariates is TRUE.")
   }
+  if ( is.character(p) & p != "PY1K1" ) {
+    stop("Insert a valid value for p.")
+  }
   
   if ( is.null(y) ) {
   } else {
@@ -76,10 +79,14 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   
   if ( !covariates ) { 
     
-    if ( p == "PY1K1" ) {
-      pp <- mean(Yobs==1, na.rm = T)
-    } else {
+    if ( length(p) > 1 ) {
       pp <- p
+    } else {
+      if ( p == "PY1K1" ) {
+        pp <- mean(Yobs==1, na.rm = T)
+      } else {
+        pp <- p
+      }
     }
     
     probs <- CTEprob( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
