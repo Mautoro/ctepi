@@ -77,13 +77,16 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
   n1 <- M - nZ1K1      # nZ0K1 + nNA
   n2 <- nZ1K1 + nNA
   
-  a1 <- nY1Z1K1 / M    # P(Y=1|Z=1,K=1) P(K=1|Z=1)
-  b1 <- 1.0 / M
-  a2 <- nY1Z0K1 / M    # P(Y=1|Z=0,K=1) P(K=1|Z=0)
-  b2 <- 1.0 / M
+  nZ1 <- nNAZ1 + nZ1K1
+  nZ0 <- nNAZ0 + nZ0K1
   
-  probK1Z1   <- (M-n1) / M       # P(K=1|Z=1)
-  probK1Z0   <- (M-n2) / M       # P(K=1|Z=0) 
+  a1 <- nY1Z1K1 / nZ1    # P(Y=1|Z=1,K=1) P(K=1|Z=1)
+  b1 <- 1.0 / nZ1
+  a2 <- nY1Z0K1 / nZ0    # P(Y=1|Z=0,K=1) P(K=1|Z=0)
+  b2 <- 1.0 / nZ0
+  
+  probK1Z1   <- (M-n1) / nZ1       # P(K=1|Z=1)
+  probK1Z0   <- (M-n2) / nZ0       # P(K=1|Z=0) 
   probY1Z1K1 <- nY1Z1K1 / nZ1K1  # P(Y=1|Z=1,K=1)
   probY1Z0K1 <- nY1Z0K1 / nZ0K1  # P(Y=1|Z=0,K=1)
   
@@ -124,7 +127,7 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
   names(masses)[-1] <- paste0("p", p)
   names(cdf) <- names(masses)
   
-  # Distribution of \Pi, mean and 95% CI for each p
+  # Distribution of \Pi, mean and 95% CI (and alpha CI) for each p
   
   CDF_Pi <- list()
   EpPi <- c()

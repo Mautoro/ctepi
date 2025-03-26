@@ -100,6 +100,8 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
     if ( length(p) == 1 & any(p == "PY1K1") ) {
       n1 <- length(Yobs) - sum(Zobs[ !is.na(Yobs) ])
       n2 <- sum(Zobs[ !is.na(Yobs) ]) + (nNAZ1 + nNAZ0)
+      nZ1 <- nNAZ1 + sum(Zobs[ !is.na(Yobs) ])
+      nZ0 <- nNAZ0 + sum(Zobs[ !is.na(Yobs) ] == 0)
       probK1Z1 <- (length(Yobs) - n1) / length(Yobs)
       probK1Z0 <- (length(Yobs) - n2) / length(Yobs)
       probs$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
@@ -135,8 +137,10 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       if ( length(p) == 1 & any(p == "PY1K1") ) {
         n1 <- probs[[i]]$probMZ$M - sum(Zaux[ !is.na(Yaux) ])
         n2 <- sum(Zaux[ !is.na(Yaux) ]) + (probs[[i]]$probMZ$nNAZ1 + probs[[i]]$probMZ$nNAZ0)
-        probK1Z1 <- (probs[[i]]$probMZ$M - n1) / probs[[i]]$probMZ$M
-        probK1Z0 <- (probs[[i]]$probMZ$M - n2) / probs[[i]]$probMZ$M
+        nZ1 <- probs[[i]]$probMZ$nNAZ1 + sum(Zaux[ !is.na(Yaux) ])
+        nZ0 <- probs[[i]]$probMZ$nNAZ0 + sum(Zaux[ !is.na(Yaux) ] == 0)
+        probK1Z1 <- (probs[[i]]$probMZ$M - n1) / nZ1
+        probK1Z0 <- (probs[[i]]$probMZ$M - n2) / nZ0
         probs[[i]]$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
       }
     }
