@@ -57,7 +57,7 @@ plotCTEprob <- function( CTEpr , epsilon=0, displayepsilon=T, addlegend=T,
            type = "l", col=colors[3], lty=lty , lwd=lwd)
   } else{ # New plot
     plot( p , p_negative_effect , ylim=ylim,
-          type = "l", col=colors[3], lty=lty, las=1, ylab = ylab, lwd=lwd, ...)
+          type = "l", col=colors[3], lty=lty, las=1, ylab = "y", lwd=lwd)
   }
   # Positive causal effect
   lines( p , p_positive_effect ,
@@ -66,6 +66,10 @@ plotCTEprob <- function( CTEpr , epsilon=0, displayepsilon=T, addlegend=T,
   ine <- (masses$cte <= epsilon) & (masses$cte >= -epsilon)
   if ( sum( ine )>0 ) {
     p_no_effect <- apply( masses[ ine ,-1] , 2, sum )
+    lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
+  } else {
+    p_no_effect <- rep( 0 , length(p_positive_effect) )
+    names(p_no_effect) <- names(p_negative_effect)
     lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
   }
   
