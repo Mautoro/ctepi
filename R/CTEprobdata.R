@@ -98,12 +98,9 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
     probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
     # gamma factor: proportion between CTEign and E(Pi)
     if ( length(p) == 1 & any(p == "PY1K1") ) {
-      n1 <- length(Yobs) - sum(Zobs[ !is.na(Yobs) ])
-      n2 <- sum(Zobs[ !is.na(Yobs) ]) + (nNAZ1 + nNAZ0)
-      nZ1 <- nNAZ1 + sum(Zobs[ !is.na(Yobs) ])
-      nZ0 <- nNAZ0 + sum(Zobs[ !is.na(Yobs) ] == 0)
-      probK1Z1 <- (length(Yobs) - n1) / length(Yobs)
-      probK1Z0 <- (length(Yobs) - n2) / length(Yobs)
+      M <- length(Yobs)
+      probK1Z1 <- (M - nNAZ1) / M
+      probK1Z0 <- (M - nNAZ0) / M
       probs$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
     }
   } else {
@@ -142,6 +139,11 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
         probK1Z1 <- (probs[[i]]$probMZ$M - n1) / nZ1
         probK1Z0 <- (probs[[i]]$probMZ$M - n2) / nZ0
         probs[[i]]$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
+        
+      M <- length(Yobs)
+      probK1Z1 <- (probs[[i]]$probMZ$M - probs[[i]]$probMZ$nNAZ1) / probs[[i]]$probMZ$M
+      probK1Z0 <- (probs[[i]]$probMZ$M - probs[[i]]$probMZ$nNAZ0) / probs[[i]]$probMZ$M
+      probs[[i]]$gamma <- 0.5 * ( 1/probK1Z1 + 1/probK1Z0 )
       }
     }
   }

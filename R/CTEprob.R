@@ -80,13 +80,13 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
   nZ1 <- nNAZ1 + nZ1K1
   nZ0 <- nNAZ0 + nZ0K1
   
-  a1 <- nY1Z1K1 / nZ1    # P(Y=1|Z=1,K=1) P(K=1|Z=1)
-  b1 <- 1.0 / nZ1
-  a2 <- nY1Z0K1 / nZ0    # P(Y=1|Z=0,K=1) P(K=1|Z=0)
-  b2 <- 1.0 / nZ0
+  a1 <- nY1Z1K1 / M    # P(Y=1|Z=1,K=1) P(K=1|Z=1)
+  b1 <- nNAZ1 / ( M * (M + nNAZ1) )
+  a2 <- nY1Z0K1 / M    # P(Y=1|Z=0,K=1) P(K=1|Z=0)
+  b2 <- nNAZ0 / ( M * (M + nNAZ0) )
   
-  probK1Z1   <- (M-n1) / nZ1       # P(K=1|Z=1)
-  probK1Z0   <- (M-n2) / nZ0       # P(K=1|Z=0) 
+  probK1Z1   <- (M-nNAZ1) / M       # P(K=1|Z=1)
+  probK1Z0   <- (M-nNAZ0) / M       # P(K=1|Z=0)
   probY1Z1K1 <- nY1Z1K1 / nZ1K1  # P(Y=1|Z=1,K=1)
   probY1Z0K1 <- nY1Z0K1 / nZ0K1  # P(Y=1|Z=0,K=1)
   
