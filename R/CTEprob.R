@@ -74,6 +74,9 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
     nNAZ1 <- nNAZ0 <- nNA/2
   }
   
+  n1 <- M + nNAZ1 # M - nZ1K1      # nZ0K1 + nNA
+  n2 <- M + nNAZ0 # nZ1K1 + nNA
+  
   a1 <- nY1Z1K1 / M    # P(Y=1|Z=1,K=1) P(K=1|Z=1)
   b1 <- (M - nZ1K1) / ( M * (M + nNAZ1) )
   a2 <- nY1Z0K1 / M    # P(Y=1|Z=0,K=1) P(K=1|Z=0)
