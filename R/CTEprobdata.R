@@ -92,7 +92,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       }
     }
     
-    probs <- CTEprobv2( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
+    probs <- CTEprob( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
                       nZ1K1 = sum(Zobs[ !is.na(Yobs) ]),
                       nZ0K1 = sum(Zobs[ !is.na(Yobs) ] == 0),
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
@@ -123,7 +123,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
         pp <- p
       }
       
-      probs[[i]] <- CTEprobv2( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
+      probs[[i]] <- CTEprob( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
                              nNAZ0 = sum(is.na(Yaux[Zaux==0])),
                              nZ1K1 = sum(Zaux[ !is.na(Yaux) ]),
                              nZ0K1 = sum(Zaux[ !is.na(Yaux) ] == 0),
