@@ -12,7 +12,8 @@ CTEprobdata(
   y = NULL,
   covariates = F,
   alpha = 0.05,
-  suppressMessages = FALSE
+  suppressMessages = FALSE,
+  approxtonorm = TRUE
 )
 }
 \arguments{
@@ -30,6 +31,12 @@ a dichotomous outcome variable: \code{Y > y}.}
 
 \item{covariates}{A logical value indicating whether the \eqn{CTE(0)} distribution should be calculated for each subset defined by the covariates
 (\code{TRUE}) or for the whole dataset (\code{FALSE}).}
+
+\item{alpha}{Significance of the credible interval of Pi.}
+
+\item{suppressMessages}{If suppressMessages is TRUE, messages of dichomization of Y are ommited.}
+
+\item{approxtonorm}{If approxtonorm is TRUE, normal approximation of the distribution of Pi is used.}
 }
 \value{
 If \code{covariates} is \code{FALSE}, \code{CTEprobdata} returns a list with the CTE(0) distribution over the possible worlds

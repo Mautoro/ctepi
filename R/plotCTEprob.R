@@ -45,11 +45,29 @@ plotCTEprob <- function( CTEpr , epsilon=0, displayepsilon=T, addlegend=T,
                          cex.legend=1, ...){
   
   p <- CTEpr$p
-  masses <- CTEpr$masses
   
-  # Calculating the probabilities of negative and positive causal effects
-  p_negative_effect <- apply( masses[ masses$cte < -epsilon,-1] , 2, sum )
-  p_positive_effect <- apply( masses[ masses$cte > epsilon,-1] , 2, sum )
+  # Computing probabilities of events E+, E- and E0. Exact and approximate methods.
+  if ( is.null(CTEpr$masses) ) {
+    dfaux <- data.frame( EpPi = CTEpr$Pi$EpPi , sqrtVpPi = sqrt(CTEpr$Pi$VpPi) )
+    p_positive_effect <- apply( dfaux , 1, function(x) {pnorm( epsilon , x[1] , x[2] , lower.tail = F) } )
+    p_negative_effect <- apply( dfaux , 1, function(x) {pnorm( -epsilon , x[1] , x[2] , lower.tail = T) } )
+    p_no_effect <- apply( dfaux , 1, function(x) {pnorm( epsilon , x[1] , x[2] , lower.tail = T) - pnorm( -epsilon , x[1] , x[2] , lower.tail = T) } )
+    
+  } else {
+    masses <- CTEpr$masses
+    
+    # Calculating the probabilities of negative and positive causal effects
+    p_negative_effect <- apply( masses[ masses$cte < -epsilon,-1] , 2, sum )
+    p_positive_effect <- apply( masses[ masses$cte > epsilon,-1] , 2, sum )
+    # Calculating the probabilities of no causal effects
+    ine <- (masses$cte <= epsilon) & (masses$cte >= -epsilon)
+    if ( sum( ine )>0 ) {
+      p_no_effect <- apply( masses[ ine ,-1] , 2, sum )
+    } else {
+      p_no_effect <- rep( 0 , length(p_positive_effect) )
+      names(p_no_effect) <- names(p_negative_effect)
+    }
+  }
   
   # Negative causal effect
   if (add) { # Drawing on existing plot
@@ -62,22 +80,14 @@ plotCTEprob <- function( CTEpr , epsilon=0, displayepsilon=T, addlegend=T,
   # Positive causal effect
   lines( p , p_positive_effect ,
          type = "l", col=colors[2], lty=lty, lwd=lwd)
-  # No causal effect
-  ine <- (masses$cte <= epsilon) & (masses$cte >= -epsilon)
-  if ( sum( ine )>0 ) {
-    p_no_effect <- apply( masses[ ine ,-1] , 2, sum )
-    lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
-  } else {
-    p_no_effect <- rep( 0 , length(p_positive_effect) )
-    names(p_no_effect) <- names(p_negative_effect)
-    lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
-  }
   
   if (addlegend) {
     legend("top", legend=c("No effect", "Possitive effect", "Negative effect"),
            col=colors, lty=1, xpd=TRUE, inset=c(0, -0.13),
            horiz=T, bty="n", text.width = NA, cex=cex.legend)
   }
+  # No causal effect
+  lines( p , p_no_effect , type = "l", col=colors[1],  lty=lty, lwd=lwd)
   
   # Adding the epsilon value at the bottom left
   if (displayepsilon) {

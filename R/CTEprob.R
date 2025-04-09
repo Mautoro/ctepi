@@ -12,6 +12,8 @@
 #' @param nY1Z0K1 Number of statistical units with Y=1, Z=0, and K=1.
 #' @param p Propensity values for which the CTE distribution is calculated.
 #' @param dec.prec Number of decimal places for precision in the calculations (default is 13).
+#' @param alpha Significance of the credible interval of Pi.
+#' @param approxtonorm If approxtonorm is TRUE, normal approximation of the distribution of Pi is used.
 #'
 #' @details 
 #' The variable \eqn{\mathcal{M}} represents the set of labels for the individuals in the population of interest.
@@ -66,7 +68,8 @@
 #' result$cdf
 #'
 #' @export
-CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY1Z0K1, p, dec.prec=13, alpha=0.05) {
+CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, 
+                      nY1Z1K1, nY1Z0K1, p, dec.prec=13, alpha=0.05, approxtonorm=TRUE) {
   
   if ( is.null(nNA) ) {
     nNA <- nNAZ1 + nNAZ0
@@ -105,73 +108,101 @@ CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, nY1Z1K1, nY
     probMZ$p0 <- p0
   }
   
-  obj <- CTEprobcpp(n1 = n1, n2 = n2, a1 = a1, b1 = b1, a2 = a2, b2 = b2, p = p)
-  colnames(obj$results) <- obj$namesresults
-  obj$results[,"cte"] <- round( obj$results[,"cte"] , dec.prec)
   
-  results <- obj$results
-  
-  masses <- data.frame( cte = sort(unique(results[,"cte"])) )
-  cdf <- masses
-  
-  for (i in 1:length(p)) {
-    aux <- aggregate_cpp( values = results[,5+i],
-                          groups = results[,"cte"] ,
-                          levelgroup = masses[,"cte"] )
-    masses <- cbind( masses, aux[,2] )
-    cdf <- cbind( cdf, cumsum(aux[,2]) )
-  }
-  
-  names(masses)[-1] <- paste0("p", p)
-  names(cdf) <- names(masses)
-  
-  # Distribution of \Pi, mean and 95% CI (and alpha CI) for each p
-  
-  CDF_Pi <- list()
-  EpPi <- c()
-  q0025left <- q0025right <- q0975left <- q0975right <- c()
-  qalpha2 <- q1malpha2 <- c()
-  qPileft <- list()
-  qPiright <- list()
-  
-  for ( i in 2:ncol(cdf) ) {
-    CDF_Pi[[i]] <- approxfun(cdf$cte, 
-                             cdf[,i], 
-                             method = "constant", 
-                             yleft = -1, yright = 1, 
-                             f = 0, ties = "ordered")
-    class(CDF_Pi[[i]]) <- c( class(CDF_Pi[[i]]) , "stepfun" )
-    # Expected \Pi
-    EpPi <- c( EpPi , ctepi::Ex(CDF_Pi[[i]])$E )
+  if ( approxtonorm ) {
     
-    # Assigning values to the stepfun function CDF_Pi[[i]] needed for quasiinverse()
-    assign("vals", cdf$cte, envir = environment(CDF_Pi[[i]]))
-    assign("Fvals", cdf[,i], envir = environment(CDF_Pi[[i]]))
+    # Computing the expected value and variance of \Pi
+    a <- probY1Z1K1*probK1Z1 - probY1Z0K1*probK1Z0
+    EpPi <- a - p*(probK1Z1 - probK1Z0)   # a + p*( (1-probK1Z1) - (1-probK1Z0) )
+    VpPi <- p*(1-p)*(n1+n2) / M^2
+    sqrtVpPi <- sqrt(VpPi)
     
-    # Computing quantiles
-    qileft  <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "left")
-    qiright <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "right")
-    # Deprecated. By compatibility:
-    q0025left  <- c( q0025left , qileft(0.025) )
-    q0025right <- c( q0025right , qiright(0.025) )
-    q0975left  <- c( q0975left , qileft(0.975) )
-    q0975right <- c( q0975right , qiright(0.975) )
-    qPileft[[i]]  <- qileft   # saving F_{\pi,p}^{(-1)}
-    qPiright[[i]] <- qiright  # saving F_{\pi,p}^{-1}
-    # Quantiles of alpha/2 and 1-alpha/2
-    qalpha2 <- c( qalpha2 , qiright( alpha/2 ) )
-    q1malpha2  <- c( q1malpha2 , qileft( 1-alpha/2 ) )
+    # By compatibility, constructing a dataframe with values of the CDF of PI
+    cdf <- data.frame( cte=seq(-1,1,0.0005) )
+    qalpha2 <- q1malpha2 <- c()
+    
+    # Creating the CDF of Pi for each p and computing quantiles for the CI
+    CDF_Pi <- list()
+    for ( i in 1:length(p) ) {
+      CDF_Pi[[i]] <- function(q) { pnorm(q, EpPi[i], sqrtVpPi[i] ) }
+      qalpha2   <- c( qalpha2  , qnorm( alpha/2, EpPi[i], sqrtVpPi[i] )  )
+      q1malpha2 <- c( q1malpha2, qnorm( 1-alpha/2, EpPi[i], sqrtVpPi[i] )  )
+      cdf <- cbind( cdf , CDF_Pi[[i]](cdf$cte) ) 
+    }
+    
+    names(cdf)[-1] <- paste0("p", p)
+    
+    #masses <- cdf[-1,-1] - cdf[ -nrow(cdf) ,-1]
+    #masses <- rbind( rep(0,length(p)) , masses )
+    #masses <- cbind( cdf$cte , masses )
+    masses <- NULL
+    
+    Pi <- list( EpPi=EpPi , VpPi=VpPi, p=p , CDF_Pi=CDF_Pi,
+                qalpha2=qalpha2 , q1malpha2=q1malpha2 )
+    
+  } else {
+    obj <- CTEprobcpp(n1 = n1, n2 = n2, a1 = a1, b1 = b1, a2 = a2, b2 = b2, p = p)
+    colnames(obj$results) <- obj$namesresults
+    obj$results[,"cte"] <- round( obj$results[,"cte"] , dec.prec)
+    
+    results <- obj$results
+    
+    masses <- data.frame( cte = sort(unique(results[,"cte"])) )
+    cdf <- masses
+    
+    for (i in 1:length(p)) {
+      aux <- aggregate_cpp( values = results[,5+i],
+                            groups = results[,"cte"] ,
+                            levelgroup = masses[,"cte"] )
+      masses <- cbind( masses, aux[,2] )
+      cdf <- cbind( cdf, cumsum(aux[,2]) )
+    }
+    
+    names(masses)[-1] <- paste0("p", p)
+    names(cdf) <- names(masses)
+    
+    # Distribution of \Pi, mean and 95% CI (and alpha CI) for each p
+    
+    CDF_Pi <- list()
+    EpPi <- c()
+    q0025left <- q0025right <- q0975left <- q0975right <- c()
+    qalpha2 <- q1malpha2 <- c()
+    qPileft <- list()
+    qPiright <- list()
+    
+    for ( i in 2:ncol(cdf) ) {
+      CDF_Pi[[i]] <- approxfun(cdf$cte, 
+                               cdf[,i], 
+                               method = "constant", 
+                               yleft = -1, yright = 1, 
+                               f = 0, ties = "ordered")
+      class(CDF_Pi[[i]]) <- c( class(CDF_Pi[[i]]) , "stepfun" )
+      # Expected \Pi
+      EpPi <- c( EpPi , ctepi::Ex(CDF_Pi[[i]])$E )
+      
+      # Assigning values to the stepfun function CDF_Pi[[i]] needed for quasiinverse()
+      assign("vals", cdf$cte, envir = environment(CDF_Pi[[i]]))
+      assign("Fvals", cdf[,i], envir = environment(CDF_Pi[[i]]))
+      
+      # Computing quantiles
+      qileft  <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "left")
+      qiright <- quasiinverse( list( ecdf = CDF_Pi[[i]] ) ,continuity = "right")
+      # Deprecated.
+      #q0025left  <- c( q0025left , qileft(0.025) )
+      #q0025right <- c( q0025right , qiright(0.025) )
+      #q0975left  <- c( q0975left , qileft(0.975) )
+      #q0975right <- c( q0975right , qiright(0.975) )
+      #qPileft[[i]]  <- qileft   # saving F_{\pi,p}^{(-1)}
+      #qPiright[[i]] <- qiright  # saving F_{\pi,p}^{-1}
+      # Quantiles of alpha/2 and 1-alpha/2
+      qalpha2 <- c( qalpha2 , qiright( alpha/2 ) )
+      q1malpha2  <- c( q1malpha2 , qileft( 1-alpha/2 ) )
+    }
+    
+    
+    Pi <- list( EpPi=EpPi , p=p , CDF_Pi=CDF_Pi,
+                qalpha2=qalpha2 , q1malpha2=q1malpha2 )
   }
-  
-  q0025 <- q0025right
-  q0975 <- q0975left
-  
-  Pi <- list( EpPi=EpPi , p=p , CDF_Pi=CDF_Pi,
-              qPileft=qPileft , qPiright=qPiright,
-              q0025left=q0025left , q0025right=q0025right, 
-              q0975left=q0975left , q0975right=q0975right, 
-              q0025=q0025 , q0975=q0975 , 
-              qalpha2=qalpha2 , q1malpha2=q1malpha2 )
   
   list( masses=masses, cdf=cdf , p=p , probMZ=probMZ,
         probassing = c(probassingZ1=probassingZ1, probassingZ0=probassingZ0) ,

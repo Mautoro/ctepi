@@ -11,6 +11,9 @@
 #' a dichotomous outcome variable: \code{Y > y}.
 #' @param covariates A logical value indicating whether the \eqn{CTE(0)} distribution should be calculated for each subset defined by the covariates 
 #' (\code{TRUE}) or for the whole dataset (\code{FALSE}).
+#' @param alpha Significance of the credible interval of Pi.
+#' @param suppressMessages If suppressMessages is TRUE, messages of dichomization of Y are ommited.
+#' @param approxtonorm If approxtonorm is TRUE, normal approximation of the distribution of Pi is used.
 #'
 #' @details 
 #' \code{CTEprobdata} accepts observed data \code{(Yobs, Zobs, X)}. Each record corresponds to an observation for an individual. 
@@ -54,7 +57,7 @@
 #'
 #'
 #' @export
-CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05, suppressMessages=FALSE) {
+CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05, suppressMessages=FALSE, approxtonorm=TRUE) {
   if ( length(Yobs) != length(Zobs) ) stop("Yobs and Zobs must have the same length")
   
   if ( !is.null(X) ) {
@@ -77,7 +80,7 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
   nNAZ1 <- sum(is.na(Yobs[Zobs==1]))
   nNAZ0 <- sum(is.na(Yobs[Zobs==0]))
   
-  if ( !covariates ) { 
+  if ( !covariates ) {
     
     if ( length(p) > 1 ) {
       pp <- p
@@ -89,12 +92,12 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
       }
     }
     
-    probs <- CTEprob( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
+    probs <- CTEprobv2( M = length(Yobs) , nNAZ1 = nNAZ1, nNAZ0 = nNAZ0, 
                       nZ1K1 = sum(Zobs[ !is.na(Yobs) ]),
                       nZ0K1 = sum(Zobs[ !is.na(Yobs) ] == 0),
                       nY1Z1K1 = sum(Yobs==1 & Zobs == 1 , na.rm = T), 
                       nY1Z0K1 = sum(Yobs==1 & Zobs == 0 , na.rm = T), 
-                      p = pp , alpha=alpha )
+                      p = pp , alpha=alpha , approxtonorm=approxtonorm )
     probs$data <- list( Yobs=Yobs, Zobs=Zobs, X=X, y=y)
     # gamma factor: proportion between CTEign and E(Pi)
     if ( length(p) == 1 & any(p == "PY1K1") ) {
@@ -120,13 +123,13 @@ CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariate
         pp <- p
       }
       
-      probs[[i]] <- CTEprob( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
+      probs[[i]] <- CTEprobv2( M = sum(filtro) , nNAZ1 = sum(is.na(Yaux[Zaux==1])),
                              nNAZ0 = sum(is.na(Yaux[Zaux==0])),
                              nZ1K1 = sum(Zaux[ !is.na(Yaux) ]),
                              nZ0K1 = sum(Zaux[ !is.na(Yaux) ] == 0),
                              nY1Z1K1 = sum(Yaux==1 & Zaux == 1 , na.rm = T), 
                              nY1Z0K1 = sum(Yaux==1 & Zaux == 0 , na.rm = T), 
-                             p = pp  , alpha=alpha )
+                             p = pp  , alpha=alpha, approxtonorm=approxtonorm )
       names(probs)[i] <- paste0(paste0(colnames(X),".", Xunique[i, ]), collapse = ",")
       probs[[i]]$probMZ$M   <- sum(filtro)
       probs[[i]]$probMZ$nNAZ1 <- sum(is.na(Yaux[Zaux==1]))

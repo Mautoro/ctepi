@@ -15,7 +15,8 @@ CTEprob(
   nY1Z0K1,
   p,
   dec.prec = 13,
-  alpha = 0.05
+  alpha = 0.05,
+  approxtonorm = TRUE
 )
 }
 \arguments{
@@ -36,6 +37,10 @@ CTEprob(
 \item{p}{Propensity values for which the CTE distribution is calculated.}
 
 \item{dec.prec}{Number of decimal places for precision in the calculations (default is 13).}
+
+\item{alpha}{Significance of the credible interval of Pi.}
+
+\item{approxtonorm}{If approxtonorm is TRUE, normal approximation of the distribution of Pi is used.}
 }
 \value{
 A list containing the CTE(0) distribution for a dichotomous outcome in the measurable space. The list includes:
