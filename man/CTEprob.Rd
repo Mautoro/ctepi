@@ -16,7 +16,7 @@ CTEprob(
   p,
   dec.prec = 13,
   alpha = 0.05,
-  approxtonorm = TRUE
+  approxtonorm = FALSE
 )
 }
 \arguments{

@@ -57,7 +57,7 @@
 #'
 #'
 #' @export
-CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05, suppressMessages=FALSE, approxtonorm=TRUE) {
+CTEprobdata <- function( Yobs, Zobs, X=NULL, p = c(0:60)/60 , y=NULL , covariates = F, alpha=0.05, suppressMessages=FALSE, approxtonorm=FALSE) {
   if ( length(Yobs) != length(Zobs) ) stop("Yobs and Zobs must have the same length")
   
   if ( !is.null(X) ) {

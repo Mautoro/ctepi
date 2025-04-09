@@ -13,7 +13,7 @@ CTEprobdata(
   covariates = F,
   alpha = 0.05,
   suppressMessages = FALSE,
-  approxtonorm = TRUE
+  approxtonorm = FALSE
 )
 }
 \arguments{

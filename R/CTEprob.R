@@ -69,7 +69,21 @@
 #'
 #' @export
 CTEprob <- function(M, nNAZ1 = 0, nNAZ0 = 0, nNA=NULL, nZ1K1, nZ0K1, 
-                      nY1Z1K1, nY1Z0K1, p, dec.prec=13, alpha=0.05, approxtonorm=TRUE) {
+                      nY1Z1K1, nY1Z0K1, p, dec.prec=13, alpha=0.05, approxtonorm=FALSE) {
+  
+  if ( (!approxtonorm) & (M>2000) ) {
+    cat(paste0("M is large (M=", M, "). The exact calculation of the Pi distribution may consume a lot of resources. Select whether you want to continue with the exact calculation or use the approximation.\n"))
+    cat("1: Continue with the approximate calculation.\n")
+    cat("2: Continue with the exact calculation.\n")
+    resp <- 0
+    while (!is.element(resp, c(1,2,""))) {
+      #resp <- readline(prompt = "Enter a number (default=1): ")
+      resp <- readline(prompt = "Enter a number (default=1): ")
+    }
+    if ( is.element( resp , c(1,"")) ) {
+      approxtonorm <- TRUE
+    }
+  }
   
   if ( is.null(nNA) ) {
     nNA <- nNAZ1 + nNAZ0
